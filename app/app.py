@@ -4,8 +4,6 @@ import time
 import random
 import streamlit as st
 
-# ---------------- PATH FIX ---------------- #
-
 sys.path.append(
     os.path.abspath(
         os.path.join(os.path.dirname(__file__), '..')
@@ -14,16 +12,12 @@ sys.path.append(
 
 from model.predictor import predict_message
 
-# ---------------- PAGE CONFIG ---------------- #
-
 st.set_page_config(
     page_title="Cybertron",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-# ---------------- CSS ---------------- #
 
 st.markdown("""
 <style>
@@ -189,8 +183,6 @@ textarea {
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- SIDEBAR ---------------- #
-
 with st.sidebar:
 
     st.markdown("""
@@ -227,8 +219,6 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
 
-# ---------------- HERO ---------------- #
-
 st.markdown("<br><br><br>", unsafe_allow_html=True)
 
 st.markdown("""
@@ -241,8 +231,6 @@ Real-Time SMS Threat Detection using Machine Learning Classification Model
 </div>
 """, unsafe_allow_html=True)
 
-# ---------------- MAIN DASHBOARD ---------------- #
-
 st.subheader("📡 Message Analysis Console")
 
 message = st.text_area(
@@ -254,8 +242,6 @@ message = st.text_area(
 
 analyze = st.button("🔍 Analyze")
 
-# ---------------- RESULT ---------------- #
-
 if analyze and message.strip():
 
     with st.spinner("Cybertron AI analyzing message..."):
@@ -264,12 +250,12 @@ if analyze and message.strip():
 
     prediction = result["prediction"]
     confidence = result["confidence"]
+    spam_probability = result["spam_probability"]
+    ham_probability = result["ham_probability"]
     processing_time = result["processing_time"]
     keywords = result["detected_keywords"]
 
     st.divider()
-
-    # RESULT BANNER
 
     if prediction == "Spam":
 
@@ -291,8 +277,6 @@ if analyze and message.strip():
 
     st.divider()
 
-    # METRICS
-
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
@@ -305,20 +289,12 @@ if analyze and message.strip():
         st.metric("Processing", processing_time)
 
     with col4:
-        if prediction == "Spam":
-            st.metric(
-                "Suspicious Words",
-                len(result["suspicious_words"])
-            )
-        else:
-            st.metric(
-                "Believing Factors",
-                len(result["believing_factors"])
-            )
+        st.metric(
+            "Detected Keywords",
+            len(result["detected_keywords"])
+        )
 
     st.divider()
-
-    # CONFIDENCE BAR
 
     st.subheader("⚡ Threat Confidence")
 
@@ -326,9 +302,21 @@ if analyze and message.strip():
 
     st.caption(f"Threat Confidence Score: {confidence}%")
 
-    st.divider()
+    colA, colB = st.columns(2)
 
-    # KEYWORDS
+    with colA:
+        st.metric(
+            "Spam Probability",
+            f"{spam_probability}%"
+        )
+
+    with colB:
+        st.metric(
+            "Safe Probability",
+            f"{ham_probability}%"
+        )
+
+    st.divider()
 
     st.subheader("🧠 Detected NLP Keywords")
 
@@ -342,9 +330,6 @@ if analyze and message.strip():
         """
 
     st.markdown(keyword_html, unsafe_allow_html=True)
-
-
-# ---------------- FOOTER ---------------- #
 
 st.markdown("""
 <div class="footer">
